@@ -68,9 +68,9 @@ static void InitializeFlipper(UIApplication *application) {
 
 -(void)startStandardBeaconMonitoring
 {
-    [[PLAnalysisSettings sharedInstance] setApplicationId:@"6d418502-07be-414f-a0c6-8e9242e60f94"];
-    [[PLAnalysisSettings sharedInstance] setApplicationSecret:@"c85e4d57-4278-4622-995e-789be997d5b6"];
-    [[PLAnalysisSettings sharedInstance] setAnalysisUniqueIdentifier:@"Akasya_Emre"];
+    [[PLAnalysisSettings sharedInstance] setApplicationId:@"APPLICATION_ID"];
+    [[PLAnalysisSettings sharedInstance] setApplicationSecret:@"APPLICATION_SECRET_KEY"];
+    [[PLAnalysisSettings sharedInstance] setAnalysisUniqueIdentifier:@"UNIQUE_ID"];
     [[PLConfigManager sharedInstance] getReadyForTrackingWithCompletionHandler:^(PLError *error) {
         
         if (error) {
