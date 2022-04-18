@@ -51,8 +51,21 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 
-      PoiAnalysisConfig config = new PoiAnalysisConfig("APPLICATION_SECRET_KEY", "this is a test unique id", "APPLICATION_ID");
-      config.setOpenSystemBluetooth(true);
+      /**
+       * For using PoiLabs Analysis solution your app must get these permissions
+       *    ACCESS_FINE_LOCATION
+       *     ACCESS_COARSE_LOCATION
+       *     ACCESS_BACKGROUND_LOCATION
+       *     FOREGROUND_SERVICE
+       *    for androids with version greater than 12 you should also get
+       *    BLUETOOTH_SCAN permission
+       *    for using setOpenSystemBluetooth function with android 12 and above you should get
+       *    BLUETOOTH_CONNECT permission
+       *
+       *
+       */
+      PoiAnalysisConfig config = new PoiAnalysisConfig("APPLICATION_ID","APPLICATION_SECRET_KEY", "this is a test unique id" );
+      config.setOpenSystemBluetooth(false);
       config.enableForegroundService();
       config.setServiceNotificationTitle("Searching for campaigns...");
       config.setForegroundServiceNotificationChannelProperties(
