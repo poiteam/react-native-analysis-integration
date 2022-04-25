@@ -11,7 +11,7 @@ const Permissions = () => {
   const locationFine = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
   const locationCoarse = PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION;
 
-  const requestBlutoothPermission = async () => {
+  const requestBluetoothPermission = async () => {
     try {
       const granted = await PermissionsAndroid.requestMultiple([
         blutoothScan,
@@ -78,6 +78,7 @@ const Permissions = () => {
 
   React.useEffect(async () => {
     if (Platform.OS === 'android') {
+      await requestBluetoothPermission();
       await requestLocationPermission();
 
       await PermissionsAndroid.check(backgroudLocation).then(response => {
@@ -88,7 +89,7 @@ const Permissions = () => {
         }
       });
 
-      requestBlutoothPermission();
+      
     }
   }, []);
 

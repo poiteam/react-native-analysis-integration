@@ -56,7 +56,7 @@ allprojects {
         jcenter()
         maven {
            url "https://jitpack.io"
-            credentials { username =  "jp_uurrots7m46jfnldnvu22cd4cs" }
+            credentials { username =  "JITPACK_TOKEN" }
         }
     }
 }
