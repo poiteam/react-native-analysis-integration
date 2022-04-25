@@ -1,15 +1,15 @@
-package com.reactnativeanalysisintegration;
+package com.poi;
 
 import android.app.Application;
 import android.content.Context;
-
-import com.facebook.react.BuildConfig;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
+import com.poi.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -40,31 +40,27 @@ public class MainApplication extends Application implements ReactApplication {
         }
       };
 
+  private final ReactNativeHost mNewArchitectureNativeHost =
+      new MainApplicationReactNativeHost(this);
+
   @Override
   public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      return mNewArchitectureNativeHost;
+    } else {
+      return mReactNativeHost;
+    }
   }
 
   @Override
   public void onCreate() {
     super.onCreate();
+    // If you opted-in for the New Architecture, we enable the TurboModule system
+    ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 
-      /**
-       * For using PoiLabs Analysis solution your app must get these permissions
-       *    ACCESS_FINE_LOCATION
-       *     ACCESS_COARSE_LOCATION
-       *     ACCESS_BACKGROUND_LOCATION
-       *     FOREGROUND_SERVICE
-       *    for androids with version greater than 12 you should also get
-       *    BLUETOOTH_SCAN permission
-       *    for using setOpenSystemBluetooth function with android 12 and above you should get
-       *    BLUETOOTH_CONNECT permission
-       *
-       *
-       */
-      PoiAnalysisConfig config = new PoiAnalysisConfig("APPLICATION_ID","APPLICATION_SECRET_KEY", "this is a test unique id" );
+     PoiAnalysisConfig config = new PoiAnalysisConfig("APPLICATION_ID","APPLICATION_SECRET_KEY", "this is a test unique id" );
       config.setOpenSystemBluetooth(false);
       config.enableForegroundService();
       config.setServiceNotificationTitle("Searching for campaigns...");
@@ -94,7 +90,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.reactnativeanalysisintegration.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("com.poi.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);

@@ -8,78 +8,17 @@
 
 import React from 'react';
 import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {SafeAreaView, StatusBar} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-import { NativeModules, Button } from 'react-native';
-const { PoilabsAnalysisModule} = NativeModules;
-
-
-const PoilabsAnalysisButton = () => {
-  const onPress = () => {
-    console.log('We will invoke PoilabsAnalysis module here!');
-    PoilabsAnalysisModule.startPoilabsAnalysis();
-  }
-
-  return(
-    <Button
-    title="Click to invoke PoilabsAnalysis module"
-    color="#841584"
-    onPress={onPress}
-    />
-  );
-};
-
+import Permissions from './Permissions';
 
 const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      {
-      <PoilabsAnalysisButton/>
-      }   
-      </SafeAreaView>
-      );
-    };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+    <SafeAreaView>
+      <StatusBar />
+      <Permissions />
+    </SafeAreaView>
+  );
+};
 
 export default App;
