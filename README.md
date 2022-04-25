@@ -61,3 +61,7 @@ PoiAnalysis.getInstance().enable();
 PoiAnalysis.getInstance().startScan(this);
 
 ```
+
+
+You can check Sample codes for requesting these android permissions in react native from this link 
+https://github.com/poiteam/react-native-analysis-integration/blob/master/Permissions.js
