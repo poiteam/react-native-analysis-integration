@@ -269,7 +269,7 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     
-    implementation 'org.bitbucket.poiteam:android-analysis-sdk:v3.10.8'
+    implementation 'org.bitbucket.poiteam:android-analysis-sdk:v3.10.19'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
