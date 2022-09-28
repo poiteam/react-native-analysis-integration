@@ -34,7 +34,7 @@ In **MainApplication.java** file add below line to onCreate method.
 
 ```Java
 
-PoiAnalysisConfig  config = new  PoiAnalysisConfig("APPLICATION_SECRET_KEY", "this is a test unique id", "APPLICATION_ID");
+PoiAnalysisConfig  config = new  PoiAnalysisConfig("APPLICATION_ID", "APPLICATION_SECRET_KEY", "UNIQUE_ID");
 
 config.setOpenSystemBluetooth(true);
 
