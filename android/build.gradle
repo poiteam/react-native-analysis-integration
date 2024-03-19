@@ -10,7 +10,18 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+
     }
+
+    allprojects {
+        repositories {
+            maven {
+                url "https://jitpack.io"
+                credentials { username = 'JITPACK_TOKEN' }
+            }
+        }
+    }
+
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
