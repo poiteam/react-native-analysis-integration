@@ -1,8 +1,6 @@
-#import <React/RCTBridgeDelegate.h>
+#import <RCTAppDelegate.h>
 #import <UIKit/UIKit.h>
-#import <PoilabsAnalysis/PoilabsAnalysis.h>
-@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate, PLAnalysisManagerDelegate>
 
-@property (nonatomic, strong) UIWindow *window;
+@interface AppDelegate : RCTAppDelegate
 
 @end

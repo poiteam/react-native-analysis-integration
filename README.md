@@ -1,67 +1,128 @@
-
 # PoilabsAnalysis React Native Integration
-
-  
 
 ## iOS
 
-  
+### INSTALLATION
 
-For implementation, **follow all steps** of native iOS documentation.
+To integrate PoilabsAnalysis into your Xcode project using CocoaPods, specify it in your Podfile. 
 
-  
+```curl
+pod 'PoilabsAnalysis'
+```
 
-## Android
+### PRE-REQUIREMENTS
 
-  
+To Integrate this framework you should add some features to your project info.plist file.
 
-For implementation, **follow all steps** of native Android documentation.
+Privacy - Location Usage Description
 
-   For using PoiLabs Analysis solution your app must get these permissions  
-*	ACCESS_FINE_LOCATION  
-*	ACCESS_COARSE_LOCATION  
-*	ACCESS_BACKGROUND_LOCATION  
-*	FOREGROUND_SERVICE  
-**For Androids with version greater than 12 you should also get**  
-*    BLUETOOTH_SCAN permission  
-**For using setOpenSystemBluetooth function with android 12 and above you should get**  
-*    BLUETOOTH_CONNECT permission
-  **Without these permission this SDK will not work properly**
+Privacy - Location When In Use Usage Description
 
-In **MainApplication.java** file add below line to onCreate method.
+Privacy - Location Always Usage Description
 
-  
+Privacy - Location Always and When In Use Usage Description
 
-```Java
+### USAGE
 
-PoiAnalysisConfig  config = new  PoiAnalysisConfig("APPLICATION_ID", "APPLICATION_SECRET_KEY", "UNIQUE_ID");
+You should create a header file called **PoilabsAnalysisModule.h** and a Objective-C file  called **PoilabsAnalysisModule.m** with content below. 
+ 
+#### PoilabsAnalysisModule.h
 
-config.setOpenSystemBluetooth(true);
+``` objective-c
+#ifndef PoilabsAnalysisModule_h
+#define PoilabsAnalysisModule_h
 
-config.enableForegroundService();
+#import "PoilabsAnalysis/PoilabsAnalysis.h"
+#import <React/RCTBridgeModule.h>
+@interface PoilabsAnalysisModule : NSObject <RCTBridgeModule, PLAnalysisManagerDelegate>
+@end
 
-config.setServiceNotificationTitle("Searching for campaigns...");
+#endif /* PoilabsAnalysisModule_h */
+```
 
-config.setForegroundServiceNotificationChannelProperties(
+#### PoilabsAnalysisModule.m
 
-"My Notification Name",
+``` objective-c
+#import <Foundation/Foundation.h>
+#import "PoilabsAnalysisModule.h"
 
-"My Notification Channel Description"
+@implementation PoilabsAnalysisModule
 
-);
+RCT_EXPORT_MODULE(PoilabsAnalysisModule);
 
-PoiAnalysis.getInstance(this, config);
+RCT_EXPORT_METHOD(stopPoilabsAnalysis) {
+  [[PLAnalysisSettings sharedInstance] closeAllActions];
+}
 
-  
+RCT_EXPORT_METHOD(startPoilabsAnalysis:(NSString *)applicationId applicationSecret:(NSString *) secret uniqueIdentifier:(NSString *) uniqueId) {
+  [[PLAnalysisSettings sharedInstance] setApplicationId:applicationId];
+  [[PLAnalysisSettings sharedInstance] setApplicationSecret:secret];
+  [[PLAnalysisSettings sharedInstance] setAnalysisUniqueIdentifier:uniqueId];
+  [[PLConfigManager sharedInstance] getReadyForTrackingWithCompletionHandler:^(PLError *error) {
+      if (error) {
+          NSLog(@"Error Desc %@",error.errorDescription);
+      }
+      else
+      {
+          [[PLSuspendedAnalysisManager sharedInstance] stopBeaconMonitoring];
+          [[PLStandardAnalysisManager sharedInstance] startBeaconMonitoring];
+          [[PLStandardAnalysisManager sharedInstance] setDelegate:self];
+      }
+  }];
+}
 
-PoiAnalysis.getInstance().enable();
+-(void)analysisManagerDidFailWithPoiError:(PLError *)error
+{
+    NSLog(@"Error Desc %@",error);
+}
 
-  
+-(void)analysisManagerResponseForBeaconMonitoring:(NSDictionary *)response
+{
+    NSLog(@"Response %@",response);
+}
 
-PoiAnalysis.getInstance().startScan(this);
+@end
+```
 
+#### AppDelegate.m
+
+```c
+#import "PoilabsAnalysis/PoilabsAnalysis.h"
+```
+
+To start suspended mode that allows track location when application is killed, you should call method below in **didFinishLaunchingWithOptions:**
+
+```c
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+.....
+  if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocationKey] && [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      [[PLSuspendedAnalysisManager sharedInstance] startBeaconMonitoring];
+  }
+  .......
+  }
+```
+
+## React Native
+
+You should import **NativeModules**
+
+```js
+import {
+  NativeModules,
+} from 'react-native';
+```
+You can start PoilabsAnalysis with calling bridge method
+
+```js
+NativeModules.PoilabsAnalysisModule.startPoilabsAnalysis(APPLICATION_ID, APPLICATION_SECRET, UNIQUE_ID);
+```
+
+You can stop PoilabsAnalysis with calling bridge method
+
+```js
+NativeModules.PoilabsAnalysisModule.stopPoilabsAnalysis;
 ```
 
 
-You can check Sample codes for requesting these android permissions in react native from this link 
-https://github.com/poiteam/react-native-analysis-integration/blob/master/Permissions.js
+
