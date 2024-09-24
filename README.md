@@ -146,51 +146,51 @@ allprojects {
      <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" android:foregroundServiceType="location"/>
 ```
- 
- ### USAGE
- 
-#### Add these methods to your MainActivity.kt file
- 
- **MainActivity**
- 
+
+### USAGE
+
+#### Add these methods to your `MainActivity.kt` file
+
+**MainActivity**
+
 ```kotlin
+private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+fun setPermissionLaunchers() {
+    requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            handleNextPermission()
+        }
+    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+}
 
-    fun setPermissionLaunchers() {
-        requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                handleNextPermission()
-            }
-        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
+fun handleNextPermission() {
+    when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isPermissionGranted(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
 
-    fun handleNextPermission() {
-        when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isPermissionGranted(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> {
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-            }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_SCAN) -> {
+            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
+        }
 
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_SCAN) -> {
-                requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
-            }
-
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_CONNECT) -> {
-                requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-            }
-            else -> {
-                startPoiSdk()
-            }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_CONNECT) -> {
+            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+        else -> {
+            startPoiSdk()
         }
     }
-    fun isPermissionGranted(permission: String): Boolean {
-        return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-    }
+}
 
-    fun startPoiSdk() { 
-        PoiAnalysis.getInstance().enable()
-        PoiAnalysis.getInstance().startScan(applicationContext) 
-    }
+fun isPermissionGranted(permission: String): Boolean {
+    return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+}
+
+fun startPoiSdk() {
+    PoiAnalysis.getInstance().enable()
+    PoiAnalysis.getInstance().startScan(applicationContext)
+}
 ```
 
 #### Imported packages into MainActivity:
