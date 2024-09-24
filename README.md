@@ -128,7 +128,7 @@ allprojects {
 
 ```groovy    
  dependencies {    
-    implementation 'com.github.poiteam:Android-Analysis-SDK:v3.11.4'    
+    implementation 'com.github.poiteam:Android-Analysis-SDK:v3.11.0'    
 }
 ```
 
@@ -155,43 +155,42 @@ allprojects {
  
 ```kotlin
 
-private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-fun setPermissionLaunchers() {
-    requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            handleNextPermission()
-        }
-    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-}
+    fun setPermissionLaunchers() {
+        requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                handleNextPermission()
+            }
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
 
-fun handleNextPermission() {
-    when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isPermissionGranted(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }
+    fun handleNextPermission() {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isPermissionGranted(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            }
 
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_SCAN) -> {
-            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
-        }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_SCAN) -> {
+                requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
+            }
 
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_CONNECT) -> {
-            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-        }
-
-        else -> {
-            startPoiSdk()
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_CONNECT) -> {
+                requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            }
+            else -> {
+                startPoiSdk()
+            }
         }
     }
-}
-fun isPermissionGranted(permission: String): Boolean {
-    return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-}
+    fun isPermissionGranted(permission: String): Boolean {
+        return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    }
 
-fun startPoiSdk() {
-    PoiAnalysis.getInstance().enable()
-    PoiAnalysis.getInstance().startScan(applicationContext)
-}
+    fun startPoiSdk() { 
+        PoiAnalysis.getInstance().enable()
+        PoiAnalysis.getInstance().startScan(applicationContext) 
+    }
 ```
 
 #### Imported packages into MainActivity:
@@ -214,7 +213,7 @@ import android.Manifest
 #### Create a Kotlin filed called **PoilabsAnalysisModule** with content below
  
  ```kotlin
-import android.content.Intent
+ import android.content.Intent
 import android.util.Log
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -248,7 +247,7 @@ ReactContextBaseJavaModule(context) {
                     
                 }
             })
-            (activity as MainActivity).askRuntimePermissionsIfNeeded()
+            (activity as MainActivity).setPermissionLaunchers()
         }
     }
 
