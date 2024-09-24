@@ -198,8 +198,6 @@ fun startPoiSdk() {
  ```kotlin
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Bundle
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -207,6 +205,8 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import getpoi.com.poibeaconsdk.PoiAnalysis
 import android.Manifest
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 ```
  
  

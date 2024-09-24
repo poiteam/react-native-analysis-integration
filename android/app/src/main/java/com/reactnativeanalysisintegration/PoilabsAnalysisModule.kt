@@ -27,14 +27,14 @@ ReactContextBaseJavaModule(context) {
 
             PoiAnalysis.getInstance().setPoiResponseListener(object : PoiResponseCallback {
                 override fun onResponse(nodeIds: List<String>?) {
-                    Log.i("seasea",  nodeIds.toString())
+                    Log.i("POI_LOG",  nodeIds.toString())
                 }
 
                 override fun onFail(cause: Exception?) {
-                    Log.i("seasea", cause.toString())
+                    Log.i("POI_LOG", cause.toString())
                 }
             })
-            (activity as MainActivity).askRuntimePermissionsIfNeeded()
+            (activity as MainActivity).setPermissionLaunchers()
         }
     }
 
