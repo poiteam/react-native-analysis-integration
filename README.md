@@ -154,14 +154,13 @@ allprojects {
 **MainActivity**
 
 ```kotlin
-private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+private var requestPermissionLauncher: ActivityResultLauncher<String> =
+   registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+      handleNextPermission()
+   }
 
 fun setPermissionLaunchers() {
-    requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            handleNextPermission()
-        }
-    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+   requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 }
 
 fun handleNextPermission() {
