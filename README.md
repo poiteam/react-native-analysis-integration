@@ -128,7 +128,7 @@ allprojects {
 
 ```groovy    
  dependencies {    
-    implementation 'com.github.poiteam:Android-Analysis-SDK:v3.11.5'    
+    implementation 'com.github.poiteam:Android-Analysis-SDK:v3.11.6'    
 }
 ```
 
