@@ -154,32 +154,61 @@ allprojects {
 **MainActivity**
 
 ```kotlin
+private var permissionFlowInProgress = false
+private var sdkStarted = false
+private var pendingPermission: String? = null
+
 private var requestPermissionLauncher: ActivityResultLauncher<String> =
    registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-      handleNextPermission()
+      val requestedPermission = pendingPermission
+      pendingPermission = null
+
+      if (!isGranted) {
+         permissionFlowInProgress = false
+         Log.w("Poilabs", "Permission denied: $requestedPermission")
+         return@registerForActivityResult
+      }
+
+      requestNextPermission()
    }
 
 fun setPermissionLaunchers() {
-   requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+   if (permissionFlowInProgress || sdkStarted) {
+      return
+   }
+
+   permissionFlowInProgress = true
+   requestNextPermission()
 }
 
-fun handleNextPermission() {
-    when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isPermissionGranted(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }
+fun requestNextPermission() {
+   val nextPermission = when {
+      !isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) ->
+         Manifest.permission.ACCESS_FINE_LOCATION
 
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_SCAN) -> {
-            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
-        }
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+         !isPermissionGranted(Manifest.permission.BLUETOOTH_SCAN) ->
+         Manifest.permission.BLUETOOTH_SCAN
 
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isPermissionGranted(Manifest.permission.BLUETOOTH_CONNECT) -> {
-            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-        }
-        else -> {
-            startPoiSdk()
-        }
-    }
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+         !isPermissionGranted(Manifest.permission.BLUETOOTH_CONNECT) ->
+         Manifest.permission.BLUETOOTH_CONNECT
+
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+         !isPermissionGranted(Manifest.permission.ACCESS_BACKGROUND_LOCATION) ->
+         Manifest.permission.ACCESS_BACKGROUND_LOCATION
+
+      else -> null
+   }
+
+   if (nextPermission == null) {
+      permissionFlowInProgress = false
+      startPoiSdk()
+      return
+   }
+
+   pendingPermission = nextPermission
+   requestPermissionLauncher.launch(nextPermission)
 }
 
 fun isPermissionGranted(permission: String): Boolean {
@@ -187,16 +216,24 @@ fun isPermissionGranted(permission: String): Boolean {
 }
 
 fun startPoiSdk() {
+    if (sdkStarted) {
+        return
+    }
+
+    sdkStarted = true
     PoiAnalysis.getInstance().enable()
     PoiAnalysis.getInstance().startScan(applicationContext)
 }
 ```
+
+Do not call `setPermissionLaunchers()` from `onCreate()`. Call it after `PoiAnalysis.getInstance(...)` is initialized. The permission flow above intentionally stops when a permission is denied; do not immediately request the same permission again from the result callback.
 
 #### Imported packages into MainActivity:
 
  ```kotlin
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -246,7 +283,9 @@ ReactContextBaseJavaModule(context) {
                     
                 }
             })
-            (activity as MainActivity).setPermissionLaunchers()
+            activity.runOnUiThread {
+                (activity as MainActivity).setPermissionLaunchers()
+            }
         }
     }
 
@@ -303,9 +342,8 @@ NativeModules.PoilabsAnalysisModule.startPoilabsAnalysis(APPLICATION_ID, APPLICA
 You can stop PoilabsAnalysis with calling bridge method
 
 ```js
-NativeModules.PoilabsAnalysisModule.stopPoilabsAnalysis;
+NativeModules.PoilabsAnalysisModule.stopPoilabsAnalysis();
 ```
-
 
 
 
