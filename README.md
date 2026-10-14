@@ -1,14 +1,25 @@
 # PoilabsAnalysis React Native Integration
 
+| | iOS | Android |
+|---|---|---|
+| PoilabsAnalysis | 3.8.29 | v3.12.0 |
+| Minimum OS | iOS 12.0 | Android 5.0 (API 21) |
+| Installation | Swift Package Manager | Gradle (JitPack) |
+
 ## iOS
 
 ### INSTALLATION
 
-To integrate PoilabsAnalysis into your Xcode project using CocoaPods, specify it in your Podfile. 
+PoilabsAnalysis is distributed with **Swift Package Manager (SPM)**. CocoaPods is no longer supported for the SDK; new versions are not published there. Your React Native app keeps using CocoaPods for React Native itself, and you add the SDK to the app target with SPM:
 
-```curl
-pod 'PoilabsAnalysis'
-```
+1. Open `ios/YourAppName.xcworkspace` in Xcode.
+2. Select **File > Add Package Dependencies...**
+3. Enter the repository URL: `https://github.com/poiteam/ios-analysis-pod.git`
+4. Choose **Exact Version** `3.8.29` and add the **PoilabsAnalysis** product to your **app target**.
+
+#### Migrating from CocoaPods
+
+Remove `pod 'PoilabsAnalysis'` from `ios/Podfile`, run `pod install` in the `ios` folder, then add the package as described above. Do not keep the SDK in your `Podfile` while it is added with SPM; the same framework would be embedded twice.
 
 ### PRE-REQUIREMENTS
 
@@ -22,6 +33,10 @@ Privacy - Location Always Usage Description
 
 Privacy - Location Always and When In Use Usage Description
 
+#### Required Background Modes
+
+You should add "Location updates" and "Uses Bluetooth LE accessories" Background Modes from Project's Signing & Capabilities tab.
+
 ### USAGE
 
 You should create a header file called **PoilabsAnalysisModule.h** and a Objective-C file  called **PoilabsAnalysisModule.m** with content below. 
@@ -32,7 +47,7 @@ You should create a header file called **PoilabsAnalysisModule.h** and a Objecti
 #ifndef PoilabsAnalysisModule_h
 #define PoilabsAnalysisModule_h
 
-#import "PoilabsAnalysis/PoilabsAnalysis.h"
+#import <PoilabsAnalysis/PoilabsAnalysis.h>
 #import <React/RCTBridgeModule.h>
 @interface PoilabsAnalysisModule : NSObject <RCTBridgeModule, PLAnalysisManagerDelegate>
 @end
@@ -87,7 +102,7 @@ RCT_EXPORT_METHOD(startPoilabsAnalysis:(NSString *)applicationId applicationSecr
 #### AppDelegate.m
 
 ```c
-#import "PoilabsAnalysis/PoilabsAnalysis.h"
+#import <PoilabsAnalysis/PoilabsAnalysis.h>
 ```
 
 To start suspended mode that allows track location when application is killed, you should call method below in **didFinishLaunchingWithOptions:**
@@ -128,7 +143,7 @@ allprojects {
 
 ```groovy    
  dependencies {    
-    implementation 'com.github.poiteam:Android-Analysis-SDK:v3.11.6'    
+    implementation 'com.github.poiteam:Android-Analysis-SDK:v3.12.0'
 }
 ```
 
@@ -146,6 +161,8 @@ allprojects {
      <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" android:foregroundServiceType="location"/>
 ```
+
+**PoiPanel Geofence Mode (v3.12.0+):** Geofences are managed in PoiPanel; no code change is required in your app. The SDK always runs regular beacon scanning while `startScan()` is active, and promotes it to a foreground service inside a configured geofence or when a matching beacon is detected. For this, `ACCESS_FINE_LOCATION` and `ACCESS_BACKGROUND_LOCATION` must be granted (without background location, geofence transitions are only delivered while the app is in the foreground), the foreground service configuration must be enabled, and the device needs Google Play Services. Without these, regular scanning still works.
 
 ### USAGE
 
